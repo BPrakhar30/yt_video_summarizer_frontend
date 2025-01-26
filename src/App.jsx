@@ -38,10 +38,13 @@ function App() {
     setError(null)
 
     try {
+      console.log('Making request to:', API_URL); // Debug log
+      
       const response = await fetch(`${API_URL}/api/summarize`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json'
         },
         body: JSON.stringify({
           video_url: videoUrl,
@@ -49,12 +52,16 @@ function App() {
         })
       });
 
-      const data = await response.json();
-
+      console.log('Response status:', response.status); // Debug log
+      
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to get summary');
+        const errorData = await response.json();
+        console.error('API Error:', errorData); // Debug log
+        throw new Error(errorData.error || 'Failed to generate summary');
       }
 
+      const data = await response.json();
+      console.log('API Response:', data); // Debug log
       setSummary(data.summary);
     } catch (error) {
       console.error('Error:', error);
